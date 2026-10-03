@@ -1,0 +1,95 @@
+﻿@model IEnumerable<EvaBecario2026_Cabrera.Models.ReclamosModel>
+
+@{
+    ViewBag.Title = "Reclamos";
+}
+
+<div class="container py-4" style="max-width: 1140px;">
+    @* Encabezado *@
+    <div class="d-flex justify-content-between align-items-baseline pb-3 mb-4 border-bottom">
+        <div>
+            <h3 class="fw-semibold text-dark mb-1 tracking-tight">Reclamos</h3>
+            <p class="text-muted small mb-0">Registro y control de reclamos de consumidores</p>
+        </div>
+        <div>
+            @Html.ActionLink("Nuevo registro", "Crear", "Reclamos", null, new { @class = "btn btn-dark btn-sm px-3 rounded-1 shadow-none" })
+        </div>
+    </div>
+
+    @* Mensajes del servidor *@
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-light border border-success border-opacity-25 text-success small py-2 px-3 rounded-1 mb-4 d-flex justify-content-between align-items-center" role="alert">
+            <span>@TempData["Mensaje"]</span>
+            <button type="button" class="btn-close small" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.75rem;"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-light border border-danger border-opacity-25 text-danger small py-2 px-3 rounded-1 mb-4 d-flex justify-content-between align-items-center" role="alert">
+            <span>@TempData["Error"]</span>
+            <button type="button" class="btn-close small" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.75rem;"></button>
+        </div>
+    }
+
+    @* Registros de reclamos *@
+    <div class="border rounded-1 bg-white">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                <thead class="bg-light text-secondary border-bottom">
+                    <tr class="text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.04em;">
+                        <th class="ps-3 py-3 font-monospace">N°</th>
+                        <th class="py-3">Proveedor</th>
+                        <th class="py-3">Consumidor</th>
+                        <th class="py-3">DUI</th>
+                        <th class="py-3">Detalle</th>
+                        <th class="py-3">Monto</th>
+                        <th class="py-3">Fecha</th>
+                        <th class="pe-3 py-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-3 text-muted font-monospace small">#@item.IdReclamo</td>
+                                <td class="fw-medium text-dark">@item.NombreProveedor</td>
+                                <td>@item.NombreCompletoConsumidor</td>
+                                <td class="text-muted font-monospace small">@item.DUI</td>
+                                <td class="text-muted text-truncate" style="max-width: 220px;" title="@item.DetalleReclamo">
+                                    @item.DetalleReclamo
+                                </td>
+                                <td class="font-monospace fw-semibold text-dark">
+                                    @(item.MontoReclamado.HasValue ? "$" + item.MontoReclamado.Value.ToString("N2") : "-")
+                                </td>
+                                <td class="text-muted small">
+                                    @item.FechaIngreso.ToString("dd/MM/yyyy")
+                                </td>
+                                <td class="pe-3 text-nowrap">
+                                    @Html.ActionLink("Editar", "Editar", new { id = item.IdReclamo }, new { @class = "btn btn-outline-secondary btn-sm py-0 px-2 rounded-1 border-0 text-dark", style = "font-size: 0.8rem;" })
+
+                                    @using (Html.BeginForm("Borrar", "Reclamos", new { id = item.IdReclamo }, FormMethod.Post, new { style = "display:inline;", onsubmit = "return confirm('¿Confirma la eliminación permanente de este registro?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger btn-sm py-0 px-2 rounded-1 border-0" style="font-size: 0.8rem;">Eliminar</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5 small">
+                                No hay registros disponibles.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
